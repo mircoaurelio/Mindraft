@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Psychedelic Zoom Artwork with Vertical Controls</title>
+    <title>Mindraft</title>
     <style>
         body {
             margin: 0;
@@ -96,8 +96,10 @@
             border-radius: 50%;
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
         }
-
-        #toggleButton, #saveStateButton, #randomizeButton, #morphButton{
+ .control-group span {
+         display: none! important;
+        }
+        #toggleButton, #saveStateButton, #randomizeButton{
                position: absolute;
     min-width: 126px;
     top: 10px;
@@ -225,8 +227,7 @@
 </div>
 <div id="bpmDisplay" style="display: none;"></div>
 <button id="toggleButton">Show Controls</button>
-<button id="saveStateButton">Share</button>
-<button id="morphButton">Morph</button>
+<button id="saveStateButton">Share</button> 
 <button id="randomizeButton">Randomize</button>
 <div id="mixcloudPlayerContainer">
     <iframe id="mixcloudPlayer" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&feed=%2FAsoTranceSound%2Fasotrance-presents-a-new-trance-experience-vol-50%2F"></iframe>
@@ -603,8 +604,8 @@ let currentInterval; // Define a variable to store the current interval ID
 
 function smoothTransition(slider, targetValue) {
     const currentValue = parseFloat(slider.value);
-    const duration = 5000; // 5 seconds
-    const steps = 100;
+    const duration = 10000; // 5 seconds
+    const steps = 1000;
     const stepTime = duration / steps;
     const valueIncrement = (targetValue - currentValue) / steps;
 
