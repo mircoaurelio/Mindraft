@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mindraft</title>
+    <title>Psychedelic Zoom Artwork with Vertical Controls</title>
     <style>
         body {
             margin: 0;
@@ -12,39 +12,38 @@
             color: #fff;
             font-family: 'Roboto', sans-serif;
         }
-/* Custom Scrollbar for Controls */
-#controls {
-    scrollbar-width: thin;
-    scrollbar-color: #888 #333; /* Color of thumb and track */
-}
+        #controls {
+            scrollbar-width: thin;
+            scrollbar-color: #888 #333; /* Color of thumb and track */
+        }
 
-/* For Webkit Browsers (Chrome, Safari) */
-#controls::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
-    background-color: #333; /* Background color of the scrollbar track */
-}
+        #controls::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+            background-color: #333; /* Background color of the scrollbar track */
+        }
 
-#controls::-webkit-scrollbar-thumb {
-    background-color: #888; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* Material-like shadow */
-}
+        #controls::-webkit-scrollbar-thumb {
+            background-color: #888; /* Color of the scrollbar thumb */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* Material-like shadow */
+        }
 
-#controls::-webkit-scrollbar-thumb:hover {
-    background-color: #555; /* Darker thumb on hover */
-}
+        #controls::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Darker thumb on hover */
+        }
 
         #controls {
             position: absolute;
             top: 0;
             left: 0;
+           
             z-index: 1000;
             display: flex;
             flex-direction: column;
             padding: 20px;
             background-color: #333;
             box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);
-            height: 100%;
+            height: calc(100% - 100px);
             overflow-y: auto;
             width: 250px;
             visibility: hidden;
@@ -99,20 +98,20 @@
  .control-group span {
          display: none! important;
         }
-        #toggleButton, #saveStateButton, #randomizeButton{
-               position: absolute;
-    min-width: 126px;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-    background-color: #da6a902e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        #toggleButton, #saveStateButton, #randomizeButton, #morphButton {
+            position: absolute;
+            min-width: 126px;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #da6a902e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         #saveStateButton {
             top: 50px;
@@ -120,9 +119,12 @@
         #randomizeButton {
             top: 90px;
         }
+        #morphButton {
+            top: 130px;
+        }
         #bpmDisplay {
             position: absolute;
-            top: 130px;
+            top: 170px;
             right: 10px;
             z-index: 1000;
             background-color: rgba(0, 0, 0, 0.7);
@@ -229,6 +231,7 @@
 <button id="toggleButton">Show Controls</button>
 <button id="saveStateButton">Share</button> 
 <button id="randomizeButton">Randomize</button>
+<button id="morphButton">Morph</button>
 <div id="mixcloudPlayerContainer">
     <iframe id="mixcloudPlayer" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&feed=%2FAsoTranceSound%2Fasotrance-presents-a-new-trance-experience-vol-50%2F"></iframe>
 </div>
@@ -257,7 +260,9 @@
     let bpm = 0;
     let bpmHistory = [];
     let lastPressTime = 0;
-   
+
+    let canRandomize = true; // Variable to control randomize button timing
+
     function setup() {
         createCanvas(windowWidth, windowHeight);
         maxRadius = min(width, height) / 2;
@@ -268,6 +273,7 @@
         setupToggleControls();
         setupSaveStateButton();
         setupRandomizeButton();
+        setupMorphButton();
         window.addEventListener('keydown', handleKeyPress);
 
         // Randomize initial parameters
@@ -576,54 +582,64 @@
     }
 
     function setupRandomizeButton() {
-    const randomizeButton = document.getElementById('randomizeButton');
+        const randomizeButton = document.getElementById('randomizeButton');
 
-    randomizeButton.addEventListener('click', function() {
-        // Stop any existing random transitions
-        clearInterval(currentInterval);
-        
-        smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
-        smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 14));
-        smoothTransition(document.getElementById('layerSlider'), getRandomValue(1, 20));
-        smoothTransition(document.getElementById('pointsSlider'), getRandomValue(0, 20));
-        smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
-        smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 255));
-        smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 10));
-        smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(3, 12));
-        smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
-        smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
-        smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
-        smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
-        smoothTransition(document.getElementById('saturationSlider'), getRandomValue(0, 100));
-        smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(0, 100));
-        smoothTransition(document.getElementById('lightSlider'), getRandomValue(0, 100));
-    });
-}
+        randomizeButton.addEventListener('click', function() {
+            if (!canRandomize) return; // Prevent multiple clicks within 10 seconds
 
-let currentInterval; // Define a variable to store the current interval ID
+            // Disable the button and set a timer to re-enable it
+            canRandomize = false;
+            randomizeButton.disabled = true;
+            setTimeout(() => {
+                canRandomize = true;
+                randomizeButton.disabled = false;
+            }, 10000); // 10 seconds
 
-function smoothTransition(slider, targetValue) {
-    const currentValue = parseFloat(slider.value);
-    const duration = 10000; // 5 seconds
-    const steps = 1000;
-    const stepTime = duration / steps;
-    const valueIncrement = (targetValue - currentValue) / steps;
+            // Smooth transition to random values
+            smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
+            smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 14));
+            smoothTransition(document.getElementById('layerSlider'), getRandomValue(1, 20));
+            smoothTransition(document.getElementById('pointsSlider'), getRandomValue(0, 20));
+            smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
+            smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 255));
+            smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 10));
+            smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(3, 12));
+            smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
+            smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
+            smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
+            smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
+            smoothTransition(document.getElementById('saturationSlider'), getRandomValue(0, 100));
+            smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(0, 100));
+            smoothTransition(document.getElementById('lightSlider'), getRandomValue(0, 100));
+        });
+    }
 
-    let stepCount = 0;
-    // Clear any existing interval before starting a new one
-    clearInterval(currentInterval);
-    
-    currentInterval = setInterval(() => {
-        stepCount++;
-        slider.value = currentValue + valueIncrement * stepCount;
-        slider.dispatchEvent(new Event('input'));
+    function setupMorphButton() {
+        const morphButton = document.getElementById('morphButton');
 
-        if (stepCount >= steps) {
-            clearInterval(currentInterval);
-        }
-    }, stepTime);
-}
+        morphButton.addEventListener('click', function() {
+            // Instantly set random values without smooth transition
+            document.getElementById('speedSlider').value = getRandomValue(-10, 10);
+            document.getElementById('structureSpeedSlider').value = getRandomValue(1, 14);
+            document.getElementById('layerSlider').value = getRandomValue(1, 20);
+            document.getElementById('pointsSlider').value = getRandomValue(0, 20);
+            document.getElementById('distortionSlider').value = getRandomValue(0, 100);
+            document.getElementById('backgroundSlider').value = getRandomValue(0, 255);
+            document.getElementById('strokeWidthSlider').value = getRandomValue(1, 10);
+            document.getElementById('polygonPointsSlider').value = getRandomValue(3, 12);
+            document.getElementById('growthSlider').value = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
+            document.getElementById('blurFactorSlider').value = getRandomValue(2, 8);
+            document.getElementById('baseHueSlider').value = getRandomValue(0, 360);
+            document.getElementById('colorShiftSlider').value = getRandomValue(0, 360);
+            document.getElementById('saturationSlider').value = getRandomValue(0, 100);
+            document.getElementById('brightnessSlider').value = getRandomValue(0, 100);
+            document.getElementById('lightSlider').value = getRandomValue(0, 100);
 
+            // Trigger input events to apply changes
+            const sliders = document.querySelectorAll('input[type="range"]');
+            sliders.forEach(slider => slider.dispatchEvent(new Event('input')));
+        });
+    }
 
     function smoothTransition(slider, targetValue) {
         const currentValue = parseFloat(slider.value);
@@ -673,4 +689,3 @@ function smoothTransition(slider, targetValue) {
 </script>
 </body>
 </html>
- 
