@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychedelic Zoom Artwork with Vertical Controls</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #222;
+            color: #fff;
+            font-family: 'Roboto', sans-serif;
+        }
+/* Custom Scrollbar for Controls */
+#controls {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #333; /* Color of thumb and track */
+}
+
+/* For Webkit Browsers (Chrome, Safari) */
+#controls::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+    background-color: #333; /* Background color of the scrollbar track */
+}
+
+#controls::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* Material-like shadow */
+}
+
+#controls::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker thumb on hover */
+}
+
+        #controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background-color: #333;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);
+            height: 100%;
+            overflow-y: auto;
+            width: 250px;
+            visibility: hidden;
+        }
+        .control-group {
+            margin-bottom: 20px;
+            background-color: #444;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .control-group label {
+            font-size: 12px;
+            color: #bbb;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .control-group span {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .control-group input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ff4081;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #ff4081;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+
+        #toggleButton, #saveStateButton, #randomizeButton, #morphButton{
+               position: absolute;
+    min-width: 126px;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background-color: #da6a902e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #saveStateButton {
+            top: 50px;
+        }
+        #randomizeButton {
+            top: 90px;
+        }
+        #bpmDisplay {
+            position: absolute;
+            top: 130px;
+            right: 10px;
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #mixcloudPlayerContainer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #222;
+        }
+        iframe {
+            width: 100%;
+            height: 60px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div id="controls">
+    <!-- Controls -->
+    <div class="control-group">
+        <label for="speedSlider">Rotation Speed</label>
+        <span id="speedValue">2</span>
+        <input type="range" id="speedSlider" min="-10" max="10" value="2">
+    </div>
+    <div class="control-group">
+        <label for="structureSpeedSlider">Structure Speed</label>
+        <span id="structureSpeedValue">8</span>
+        <input type="range" id="structureSpeedSlider" min="1" max="14" value="8">
+    </div>
+    <div class="control-group">
+        <label for="layerSlider">Layers</label>
+        <span id="layerValue">10</span>
+        <input type="range" id="layerSlider" min="1" max="20" value="10">
+    </div>
+    <div class="control-group">
+        <label for="pointsSlider">Points</label>
+        <span id="pointsValue">12</span>
+        <input type="range" id="pointsSlider" min="0" max="20" value="12">
+    </div>
+    <div class="control-group">
+        <label for="distortionSlider">Distortion</label>
+        <span id="distortionValue">50</span>
+        <input type="range" id="distortionSlider" min="0" max="100" value="50">
+    </div>
+    <div class="control-group">
+        <label for="backgroundSlider">Background Alpha</label>
+        <span id="backgroundValue">50</span>
+        <input type="range" id="backgroundSlider" min="0" max="255" value="50">
+    </div>
+    <div class="control-group">
+        <label for="strokeWidthSlider">Stroke Width</label>
+        <span id="strokeWidthValue">2</span>
+        <input type="range" id="strokeWidthSlider" min="1" max="10" value="2">
+    </div>
+    <div class="control-group">
+        <label for="polygonPointsSlider">Polygon Points</label>
+        <span id="polygonPointsValue">6</span>
+        <input type="range" id="polygonPointsSlider" min="3" max="12" value="6">
+    </div>
+    <div class="control-group">
+        <label for="growthSlider">Growth</label>
+        <span id="growthValue">1</span>
+        <input type="range" id="growthSlider" min="0.9" max="1.08" step="0.01" value="1">
+    </div>
+    <div class="control-group">
+        <label for="blurFactorSlider">Blur Factor</label>
+        <span id="blurFactorValue">4</span>
+        <input type="range" id="blurFactorSlider" min="2" max="8" value="4">
+    </div>
+    <div class="control-group">
+        <label for="baseHueSlider">Base Hue</label>
+        <span id="baseHueValue">180</span>
+        <input type="range" id="baseHueSlider" min="0" max="360" value="180">
+    </div>
+    <div class="control-group">
+        <label for="colorShiftSlider">Color Shift</label>
+        <span id="colorShiftValue">0</span>
+        <input type="range" id="colorShiftSlider" min="0" max="360" value="0">
+    </div>
+    <div class="control-group">
+        <label for="saturationSlider">Saturation</label>
+        <span id="saturationValue">100</span>
+        <input type="range" id="saturationSlider" min="0" max="100" value="100">
+    </div>
+    <div class="control-group">
+        <label for="brightnessSlider">Brightness</label>
+        <span id="brightnessValue">100</span>
+        <input type="range" id="brightnessSlider" min="0" max="100" value="100">
+    </div>
+    <div class="control-group">
+        <label for="lightSlider">Light (Glow)</label>
+        <span id="lightValue">50</span>
+        <input type="range" id="lightSlider" min="0" max="100" value="50">
+    </div>
+</div>
+<div id="bpmDisplay" style="display: none;"></div>
+<button id="toggleButton">Show Controls</button>
+<button id="saveStateButton">Share</button>
+<button id="morphButton">Morph</button>
+<button id="randomizeButton">Randomize</button>
+<div id="mixcloudPlayerContainer">
+    <iframe id="mixcloudPlayer" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&feed=%2FAsoTranceSound%2Fasotrance-presents-a-new-trance-experience-vol-50%2F"></iframe>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+<script>
+    let angleOffset = 0;
+    let rotationSpeed = 0.02;
+    let structureSpeed = 0.08;
+    let maxRadius;
+    let layerCount = 10;
+    let points = 12;
+    let distortionFactor = 0.5;
+    let backgroundAlpha = 50;
+    let strokeWidth = 2;
+    let polygonPoints = 6;
+    let growth = 1;
+    let blurFactor = 4;
+    let baseHue = 180;
+    let colorShift = 0;
+    let saturation = 100;
+    let brightness = 100;
+    let lightValue = 50;
+    let structures = [];  // Define the structures array
+
+    let bpm = 0;
+    let bpmHistory = [];
+    let lastPressTime = 0;
+   
+    function setup() {
+        createCanvas(windowWidth, windowHeight);
+        maxRadius = min(width, height) / 2;
+        noFill();
+        structures.push(new Structure(0.1));
+
+        setupControls();
+        setupToggleControls();
+        setupSaveStateButton();
+        setupRandomizeButton();
+        window.addEventListener('keydown', handleKeyPress);
+
+        // Randomize initial parameters
+        randomizeParameters();
+    }
+
+    function draw() {
+        try {
+            background(34, 34, 34, backgroundAlpha);
+
+            structures.forEach((structure, index) => {
+                try {
+                    structure.update();
+                    structure.display();
+
+                    if (structure.isTooLarge()) {
+                        structures.splice(index, 1);
+                    }
+                } catch (e) {
+                    console.error('Error in structure update or display:', e);
+                }
+            });
+
+            if (structures.length === 0 || (structures[structures.length - 1] && structures[structures.length - 1].shouldCreateNew())) {
+                try {
+                    let lastStructureScale = structures.length > 0 ? structures[structures.length - 1].scaleFactor : 0.1;
+                    structures.push(new Structure(lastStructureScale / 2.5));
+                } catch (e) {
+                    console.error('Error creating new structure:', e);
+                }
+            }
+
+            angleOffset += rotationSpeed;
+            document.getElementById('bpmDisplay').textContent = `BPM: ${bpm}`;
+        } catch (e) {
+            console.error('Error in draw function:', e);
+        }
+    }
+
+    class Structure {
+        constructor(startScale) {
+            this.scaleFactor = startScale;
+            this.strokeWeight = strokeWidth;
+        }
+
+        update() {
+            this.scaleFactor *= growth;
+            this.scaleFactor += structureSpeed;
+            this.strokeWeight = map(this.scaleFactor, 1, 4, strokeWidth, 1);
+        }
+
+        display() {
+            try {
+                push();
+                translate(width / 2, height / 2);
+                scale(this.scaleFactor);
+                strokeWeight(this.strokeWeight);
+                drawSymmetricPattern();
+                pop();
+            } catch (e) {
+                console.error('Error in Structure display:', e);
+            }
+        }
+
+        isTooLarge() {
+            return this.scaleFactor > 4;
+        }
+
+        shouldCreateNew() {
+            return this.scaleFactor > 1.2 && this.scaleFactor < 1.3;
+        }
+    }
+
+    function drawSymmetricPattern() {
+        try {
+            colorMode(HSB, 360, 100, 100, 100);
+
+            for (let i = 0; i < layerCount; i++) {
+                let radius = maxRadius * (i / layerCount);
+                let psychedelicColor = color(
+                    (baseHue + colorShift + map(sin(angleOffset * 4 + i), -1, 1, 0, 360)) % 360, 
+                    saturation, 
+                    brightness, 
+                    lightValue
+                );
+                stroke(psychedelicColor);
+
+                beginShape();
+                for (let j = 0; j < points; j++) {
+                    let angle = TWO_PI / points * j + angleOffset;
+                    let x = cos(angle) * radius * (1 + distortionFactor * sin(angleOffset + i));
+                    let y = sin(angle) * radius * (1 + distortionFactor * cos(angleOffset + i));
+                    vertex(x, y);
+                    drawPolygon(x, y, radius / 3, psychedelicColor);
+                }
+                endShape(CLOSE);
+            }
+        } catch (e) {
+            console.error('Error in drawSymmetricPattern:', e);
+        }
+    }
+
+    function drawPolygon(x, y, size, colorValue) {
+        try {
+            push();
+            translate(x, y);
+            stroke(colorValue);
+            strokeWeight(strokeWidth);
+
+            size *= growth;
+
+            beginShape();
+            for (let i = 0; i < polygonPoints; i++) {
+                let angle = TWO_PI / polygonPoints * i + angleOffset * blurFactor;
+                let px = cos(angle) * size;
+                let py = sin(angle) * size;
+                vertex(px, py);
+            }
+            endShape(CLOSE);
+
+            pop();
+        } catch (e) {
+            console.error('Error in drawPolygon:', e);
+        }
+    }
+
+    function windowResized() {
+        try {
+            resizeCanvas(windowWidth, windowHeight);
+            maxRadius = min(width, height) / 2;
+        } catch (e) {
+            console.error('Error in windowResized:', e);
+        }
+    }
+
+    function setupControls() {
+        const speedSlider = document.getElementById('speedSlider');
+        const structureSpeedSlider = document.getElementById('structureSpeedSlider');
+        const layerSlider = document.getElementById('layerSlider');
+        const pointsSlider = document.getElementById('pointsSlider');
+        const distortionSlider = document.getElementById('distortionSlider');
+        const backgroundSlider = document.getElementById('backgroundSlider');
+        const strokeWidthSlider = document.getElementById('strokeWidthSlider');
+        const polygonPointsSlider = document.getElementById('polygonPointsSlider');
+        const growthSlider = document.getElementById('growthSlider');
+        const blurFactorSlider = document.getElementById('blurFactorSlider');
+        const baseHueSlider = document.getElementById('baseHueSlider');
+        const colorShiftSlider = document.getElementById('colorShiftSlider');
+        const saturationSlider = document.getElementById('saturationSlider');
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const lightSlider = document.getElementById('lightSlider');
+
+        speedSlider.addEventListener('input', function() {
+            rotationSpeed = parseFloat(speedSlider.value) / 100;
+            document.getElementById('speedValue').textContent = speedSlider.value;
+        });
+
+        structureSpeedSlider.addEventListener('input', function() {
+            structureSpeed = parseFloat(structureSpeedSlider.value) / 100;
+            document.getElementById('structureSpeedValue').textContent = structureSpeedSlider.value;
+        });
+
+        layerSlider.addEventListener('input', function() {
+            layerCount = parseInt(layerSlider.value, 10);
+            document.getElementById('layerValue').textContent = layerSlider.value;
+        });
+
+        pointsSlider.addEventListener('input', function() {
+            points = parseInt(pointsSlider.value, 10);
+            document.getElementById('pointsValue').textContent = pointsSlider.value;
+        });
+
+        distortionSlider.addEventListener('input', function() {
+            distortionFactor = distortionSlider.value / 100;
+            document.getElementById('distortionValue').textContent = distortionSlider.value;
+        });
+
+        backgroundSlider.addEventListener('input', function() {
+            backgroundAlpha = parseInt(backgroundSlider.value, 10);
+            document.getElementById('backgroundValue').textContent = backgroundSlider.value;
+        });
+
+        strokeWidthSlider.addEventListener('input', function() {
+            strokeWidth = parseInt(strokeWidthSlider.value, 10);
+            document.getElementById('strokeWidthValue').textContent = strokeWidthSlider.value;
+        });
+
+        polygonPointsSlider.addEventListener('input', function() {
+            polygonPoints = parseInt(polygonPointsSlider.value, 10);
+            document.getElementById('polygonPointsValue').textContent = polygonPointsSlider.value;
+        });
+
+        growthSlider.addEventListener('input', function() {
+            growth = parseFloat(growthSlider.value);
+            document.getElementById('growthValue').textContent = growthSlider.value;
+        });
+
+        blurFactorSlider.addEventListener('input', function() {
+            blurFactor = parseInt(blurFactorSlider.value, 10);
+            document.getElementById('blurFactorValue').textContent = blurFactorSlider.value;
+        });
+
+        baseHueSlider.addEventListener('input', function() {
+            baseHue = parseInt(baseHueSlider.value, 10);
+            document.getElementById('baseHueValue').textContent = baseHueSlider.value;
+        });
+
+        colorShiftSlider.addEventListener('input', function() {
+            colorShift = parseInt(colorShiftSlider.value, 10);
+            document.getElementById('colorShiftValue').textContent = colorShiftSlider.value;
+        });
+
+        saturationSlider.addEventListener('input', function() {
+            saturation = parseInt(saturationSlider.value, 10);
+            document.getElementById('saturationValue').textContent = saturationSlider.value;
+        });
+
+        brightnessSlider.addEventListener('input', function() {
+            brightness = parseInt(brightnessSlider.value, 10);
+            document.getElementById('brightnessValue').textContent = brightnessSlider.value;
+        });
+
+        lightSlider.addEventListener('input', function() {
+            lightValue = parseInt(lightSlider.value, 10);
+            document.getElementById('lightValue').textContent = lightSlider.value;
+        });
+
+        // Initialize values from sliders
+        updateValuesFromSliders();
+    }
+
+    function updateValuesFromSliders() {
+        const speedSlider = document.getElementById('speedSlider');
+        const structureSpeedSlider = document.getElementById('structureSpeedSlider');
+        const layerSlider = document.getElementById('layerSlider');
+        const pointsSlider = document.getElementById('pointsSlider');
+        const distortionSlider = document.getElementById('distortionSlider');
+        const backgroundSlider = document.getElementById('backgroundSlider');
+        const strokeWidthSlider = document.getElementById('strokeWidthSlider');
+        const polygonPointsSlider = document.getElementById('polygonPointsSlider');
+        const growthSlider = document.getElementById('growthSlider');
+        const blurFactorSlider = document.getElementById('blurFactorSlider');
+        const baseHueSlider = document.getElementById('baseHueSlider');
+        const colorShiftSlider = document.getElementById('colorShiftSlider');
+        const saturationSlider = document.getElementById('saturationSlider');
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const lightSlider = document.getElementById('lightSlider');
+
+        rotationSpeed = parseFloat(speedSlider.value) / 100;
+        structureSpeed = parseFloat(structureSpeedSlider.value) / 100;
+        layerCount = parseInt(layerSlider.value, 10);
+        points = parseInt(pointsSlider.value, 10);
+        distortionFactor = distortionSlider.value / 100;
+        backgroundAlpha = parseInt(backgroundSlider.value, 10);
+        strokeWidth = parseInt(strokeWidthSlider.value, 10);
+        polygonPoints = parseInt(polygonPointsSlider.value, 10);
+        growth = parseFloat(growthSlider.value);
+        blurFactor = parseInt(blurFactorSlider.value, 10);
+        baseHue = parseInt(baseHueSlider.value, 10);
+        colorShift = parseInt(colorShiftSlider.value, 10);
+        saturation = parseInt(saturationSlider.value, 10);
+        brightness = parseInt(brightnessSlider.value, 10);
+        lightValue = parseInt(lightSlider.value, 10);
+    }
+
+    function setupToggleControls() {
+        const toggleButton = document.getElementById('toggleButton');
+        const controls = document.getElementById('controls');
+
+        toggleButton.addEventListener('click', function() {
+            if (controls.style.visibility === 'hidden') {
+                controls.style.visibility = 'visible';
+                toggleButton.textContent = 'Hide Controls';
+            } else {
+                controls.style.visibility = 'hidden';
+                toggleButton.textContent = 'Show Controls';
+            }
+        });
+    }
+
+    function setupSaveStateButton() {
+        const saveStateButton = document.getElementById('saveStateButton');
+
+        saveStateButton.addEventListener('click', function() {
+            const params = new URLSearchParams({
+                speed: document.getElementById('speedSlider').value,
+                structureSpeed: document.getElementById('structureSpeedSlider').value,
+                layers: document.getElementById('layerSlider').value,
+                points: document.getElementById('pointsSlider').value,
+                distortion: document.getElementById('distortionSlider').value,
+                background: document.getElementById('backgroundSlider').value,
+                strokeWidth: document.getElementById('strokeWidthSlider').value,
+                polygonPoints: document.getElementById('polygonPointsSlider').value,
+                growth: document.getElementById('growthSlider').value,
+                blurFactor: document.getElementById('blurFactorSlider').value,
+                baseHue: document.getElementById('baseHueSlider').value,
+                colorShift: document.getElementById('colorShiftSlider').value,
+                saturation: document.getElementById('saturationSlider').value,
+                brightness: document.getElementById('brightnessSlider').value,
+                light: document.getElementById('lightSlider').value
+            });
+
+            const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            window.prompt("Copy this link to share the current settings:", url);
+        });
+    }
+
+    function setupRandomizeButton() {
+    const randomizeButton = document.getElementById('randomizeButton');
+
+    randomizeButton.addEventListener('click', function() {
+        // Stop any existing random transitions
+        clearInterval(currentInterval);
+        
+        smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
+        smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 14));
+        smoothTransition(document.getElementById('layerSlider'), getRandomValue(1, 20));
+        smoothTransition(document.getElementById('pointsSlider'), getRandomValue(0, 20));
+        smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
+        smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 255));
+        smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 10));
+        smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(3, 12));
+        smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
+        smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
+        smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
+        smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
+        smoothTransition(document.getElementById('saturationSlider'), getRandomValue(0, 100));
+        smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(0, 100));
+        smoothTransition(document.getElementById('lightSlider'), getRandomValue(0, 100));
+    });
+}
+
+let currentInterval; // Define a variable to store the current interval ID
+
+function smoothTransition(slider, targetValue) {
+    const currentValue = parseFloat(slider.value);
+    const duration = 5000; // 5 seconds
+    const steps = 100;
+    const stepTime = duration / steps;
+    const valueIncrement = (targetValue - currentValue) / steps;
+
+    let stepCount = 0;
+    // Clear any existing interval before starting a new one
+    clearInterval(currentInterval);
+    
+    currentInterval = setInterval(() => {
+        stepCount++;
+        slider.value = currentValue + valueIncrement * stepCount;
+        slider.dispatchEvent(new Event('input'));
+
+        if (stepCount >= steps) {
+            clearInterval(currentInterval);
+        }
+    }, stepTime);
+}
+
+
+    function smoothTransition(slider, targetValue) {
+        const currentValue = parseFloat(slider.value);
+        const duration = 5000; // 5 seconds
+        const steps = 100;
+        const stepTime = duration / steps;
+        const valueIncrement = (targetValue - currentValue) / steps;
+
+        let stepCount = 0;
+        const interval = setInterval(() => {
+            stepCount++;
+            slider.value = currentValue + valueIncrement * stepCount;
+            slider.dispatchEvent(new Event('input'));
+
+            if (stepCount >= steps) {
+                clearInterval(interval);
+            }
+        }, stepTime);
+    }
+
+    function getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function handleKeyPress(event) {
+        if (event.code === 'Enter') {
+            const currentTime = millis();
+            if (lastPressTime > 0) {
+                const interval = currentTime - lastPressTime;
+                const currentBpm = 60000 / interval;
+                bpmHistory.push(currentBpm);
+
+                if (bpmHistory.length > 5) bpmHistory.shift(); // Keep last 5 values
+                bpm = Math.round(bpmHistory.reduce((a, b) => a + b) / bpmHistory.length);
+                
+                structureSpeed = bpm / 100;
+                document.getElementById('structureSpeedSlider').value = structureSpeed * 100;
+            }
+            lastPressTime = currentTime;
+        }
+    }
+
+    function randomizeParameters() {
+        document.getElementById('randomizeButton').click();
+    }
+ 
+</script>
+</body>
+</html>
+ 
