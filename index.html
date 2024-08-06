@@ -98,7 +98,25 @@
  .control-group span {
          display: none! important;
         }
-        #toggleButton, #saveStateButton, #randomizeButton, #morphButton {
+        #toggleButton,  #randomizeButton{
+            top: 30px;
+        }
+        #toggleButton, #saveStateButton {
+            position: absolute;
+            min-width: 126px;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background-color: #d6aebc2e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+          #randomizeButton, #morphButton {
             position: absolute;
             min-width: 126px;
             top: 10px;
@@ -149,7 +167,7 @@
     </style>
 </head>
 <body>
-<div id="controls">
+<div id="controls" style="visibility: hidden;">
     <!-- Controls -->
     <div class="control-group">
         <label for="speedSlider">Rotation Speed</label>
@@ -230,12 +248,10 @@
 <div id="bpmDisplay" style="display: none;"></div>
 <button id="toggleButton">Show Controls</button>
 <button id="saveStateButton">Share</button> 
-<button id="randomizeButton">Randomize</button>
-<button id="morphButton">Morph</button>
+<button id="randomizeButton">Morph</button>
+<button id="morphButton">Randomize</button>
 <div id="mixcloudPlayerContainer">
-    <iframe id="mixcloudPlayer" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&feed=%2FAsoTranceSound%2Fasotrance-presents-a-new-trance-experience-vol-50%2F"></iframe>
-</div>
-
+    <iframe width="100%" height="60" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&autoplay=1&feed=%2Frydhmdee%2Fcosmic-energy-psytrance-mix-2017-rydhm-dee%2F" frameborder="0" allow="autoplay"></iframe></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 <script>
     let angleOffset = 0;
