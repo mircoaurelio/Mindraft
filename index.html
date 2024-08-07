@@ -49,6 +49,7 @@
         .tooltip {
             display: none;
             position: absolute;
+            left: 2px;
             background-color: #333;
             color: #fff;
             padding: 5px;
@@ -325,9 +326,18 @@
     <div class="control-group">
         <label for="morphVelocitySlider">Morph</label>
         <span id="morphVelocityValue">5</span>
-        <input type="range" id="morphVelocitySlider" min="1" max="20" value="5">
-        <button class="morphControlButton" data-target="morphVelocitySlider">Morph</button>
+        <input type="range" id="morphVelocitySlider" min="1" max="120" value="5">
+          </div>
+    <div class="control-group">
+        <label for="autoSlider">Auto</label>
+        <span id="autoValue">10</span>
+        <input type="range" id="autoSlider" min="1" max="1600" value="10" data-key-up="l" data-key-down="k">
+        
     </div>
+   
+ 
+    <div id="fpsDisplay" style="text-align: left; margin-top: 10px; ; font-size: 10px ; color: #ffffffbd;">FPS: <span id="fpsValue">0</span></div>
+ 
 </div>
 <div id="bpmDisplay" style="display: none;"></div>
 <button id="toggleButton">Show Controls</button>
@@ -356,12 +366,15 @@
     let brightness = 100;
     let lightValue = 50;
     let structures = [];  // Define the structures array
-
+  let autoInterval = 10000; // Default 10 seconds (10000 ms)
+let autoIntervalId = null;
     let bpm = 0;
     let bpmHistory = [];
     let lastPressTime = 0;
     let morphDuration = 5000;
     let canRandomize = true; // Variable to control randomize button timing
+    let lastTime = 0;
+let fps = 0;
 
     function setup() {
         createCanvas(windowWidth, windowHeight);
@@ -533,6 +546,10 @@
     }
 
     function setupControls() {
+        const autoSlider = document.getElementById('autoSlider');
+    const morphButton = document.getElementById('morphButton');
+
+   
         const morphVelocitySlider = document.getElementById('morphVelocitySlider');
         const speedSlider = document.getElementById('speedSlider');
         const structureSpeedSlider = document.getElementById('structureSpeedSlider');
@@ -550,11 +567,18 @@
         const brightnessSlider = document.getElementById('brightnessSlider');
         const lightSlider = document.getElementById('lightSlider');
 
-        morphVelocitySlider.addEventListener('input', function() {
-            morphDuration = morphVelocitySlider.value * 1000;
-            document.getElementById('morphVelocityValue').textContent = morphVelocitySlider.value;
+        autoSlider.addEventListener('input', function() {
+            updateAutoInterval();
         });
-         
+
+        morphVelocitySlider.addEventListener('input', function() {
+            morphDuration = parseInt(morphVelocitySlider.value, 10) * 1000;
+            document.getElementById('morphVelocityValue').textContent = morphVelocitySlider.value;
+            updateAutoInterval(); // Update auto interval when morph duration changes
+        });
+
+        
+    startAutoMorph();
         morphDuration = parseInt(morphVelocitySlider.value, 10) * 1000;
 
         speedSlider.addEventListener('input', function() {
@@ -670,6 +694,21 @@
         lightValue = parseInt(lightSlider.value, 10);
     }
 
+    function updateAutoInterval() {
+        const autoSliderValue = parseInt(document.getElementById('autoSlider').value, 10) * 1000;
+        autoInterval = autoSliderValue + morphDuration;
+        document.getElementById('autoValue').textContent = (autoInterval / 1000).toFixed(1); // Update the label with the total interval in seconds
+
+        // Restart the auto-morph interval
+        clearInterval(autoIntervalId);
+        startAutoMorph();
+    }
+    function startAutoMorph() {
+        autoIntervalId = setInterval(function() {
+            document.getElementById('morphButton').click();
+        }, autoInterval);
+    }
+
     function setupToggleControls() {
         const toggleButton = document.getElementById('toggleButton');
         const controls = document.getElementById('controls');
@@ -731,15 +770,15 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
             morphControlButtons.forEach(button => {
         button.style.display = 'block';
     });
-            }, 5000); // 10 seconds
+            }, morphDuration); // 10 seconds
 
             // Smooth transition to random values
             smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
             smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
             smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 14));
-            smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 20));
+           // 
             smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
-            smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 255));
+            smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 140));
             smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 5));
             smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(5, 12));
             smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
@@ -749,6 +788,9 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
             smoothTransition(document.getElementById('saturationSlider'), getRandomValue(2, 100));
             smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(2, 100));
             smoothTransition(document.getElementById('lightSlider'), getRandomValue(2, 100));
+            if (getRandomValue(1,10) == 1){
+                        smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 20));
+            }
         });
              
         
@@ -805,6 +847,62 @@ function smoothTransition(slider, targetValue) {
         }, stepTime);
     }
 
+    function calculateFPS() {
+    const currentTime = performance.now();
+    fps = Math.round(1000 / (currentTime - lastTime));
+    lastTime = currentTime;
+    document.getElementById('fpsValue').textContent = fps;
+}
+function startAutoMorph() {
+    autoIntervalId = setInterval(function() {
+        if (document.getElementById('randomizeButton').style.display !== 'none'){
+           document.getElementById('randomizeButton').click();
+        }
+    }, autoInterval);
+}
+
+function calculateFPS() {
+    const currentTime = performance.now();
+    fps = Math.round(1000 / (currentTime - lastTime));
+    lastTime = currentTime;
+    document.getElementById('fpsValue').textContent = fps;
+}
+
+function draw() {
+    try {
+        calculateFPS(); // Calculate FPS for each frame
+
+        background(34, 34, 34, backgroundAlpha);
+
+        structures.forEach((structure, index) => {
+            try {
+                structure.update();
+                structure.display();
+
+                if (structure.isTooLarge()) {
+                    structures.splice(index, 1);
+                }
+            } catch (e) {
+                console.error('Error in structure update or display:', e);
+            }
+        });
+
+        if (structures.length === 0 || (structures[structures.length - 1] && structures[structures.length - 1].shouldCreateNew())) {
+            try {
+                let lastStructureScale = structures.length > 0 ? structures[structures.length - 1].scaleFactor : 0.1;
+                structures.push(new Structure(lastStructureScale / 2.5));
+            } catch (e) {
+                console.error('Error creating new structure:', e);
+            }
+        }
+
+        angleOffset += rotationSpeed;
+        document.getElementById('bpmDisplay').textContent = `BPM: ${bpm}`;
+    } catch (e) {
+        console.error('Error in draw function:', e);
+    }
+}
+
     // Function to highlight a control group
     function highlightControlGroup(controlGroup) {
         controlGroup.classList.add('highlight');
@@ -840,7 +938,7 @@ function smoothTransition(slider, targetValue) {
     // Function to get a random value for each slider
     function getRandomValueForSlider(targetId) {
         if (targetId === 'backgroundSlider') {
-            return getRandomValue(0, 360);
+            return getRandomValue(0, 140);
         } else if (targetId === 'growthSlider') {
             return (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
         } else if (targetId === 'structureSpeedSlider') {
@@ -883,7 +981,9 @@ function smoothTransition(slider, targetValue) {
 
    
     function randomizeParameters() {
-        document.getElementById('randomizeButton').click();
+        if (document.getElementById('randomizeButton').style.display !== 'none'){
+             document.getElementById('randomizeButton').click();
+        }
     }
    //document.addEventListener('keydown', function(event) {
    //    const controlGroups = document.querySelectorAll('.control-group');
@@ -978,7 +1078,7 @@ controlGroups.forEach(group => {
 
     group.addEventListener('mouseover', function() {
         tooltip.style.display = 'block';
-        tooltip.style.width = '24%';
+        tooltip.style.width = '18%';
         tooltip.style.overflow   = 'hidden';
     });
     group.addEventListener('mouseout', function() {
@@ -996,7 +1096,7 @@ function adjustSlider(sliderId, step) {
     // Smooth transition function (already in your code)
     function smoothTransition(slider, targetValue) {
         const currentValue = parseFloat(slider.value);
-        const duration = 5000; // 5 seconds
+        const duration = morphDuration; // 5 seconds
         const steps = 100;
         const stepTime = duration / steps;
         const valueIncrement = (targetValue - currentValue) / steps;
@@ -1031,7 +1131,7 @@ function adjustSlider(sliderId, step) {
             let randomValue;
             backgroundSlider
             if (targetId === 'backgroundSlider') {
-                randomValue = getRandomValue(0, 360);
+                randomValue = getRandomValue(0, 30);
             } else if (targetId === 'growthSlider') {
                 randomValue = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
             } else if (targetId === 'structureSpeedSlider') {
@@ -1067,7 +1167,7 @@ function adjustSlider(sliderId, step) {
             // Show the button again after morphing
             setTimeout(() => {
                 button.style.display = 'block';
-            }, 5000); // Adjust the timeout duration as needed
+            }, morphDuration); // Adjust the timeout duration as needed
         });
     });
    
