@@ -226,7 +226,7 @@
     <div class="control-group">
         <label for="backgroundSlider">Alpha</label>
         <span id="backgroundValue">50</span>
-        <input type="range" id="backgroundSlider" min="0" max="255" step="2" value="50" data-key-up="2" data-key-down="1" data-key-morph="<">
+        <input type="range" id="backgroundSlider" min="0" max="255" step="4" value="50" data-key-up="2" data-key-down="1" data-key-morph="<">
         <button class="morphControlButton" data-target="backgroundSlider">Morph</button>
     </div>
     <div class="control-group">
@@ -251,7 +251,7 @@
     <div class="control-group">
         <label for="speedSlider">Rotation</label>
         <span id="speedValue">2</span>
-        <input type="range" id="speedSlider" min="-10" max="10" value="2"  step="0.3" data-key-up="r" data-key-down="f" data-key-morph="v">
+        <input type="range" id="speedSlider" min="-10" max="10" value="2"  step="0.2" data-key-up="r" data-key-down="f" data-key-morph="v">
         <button class="morphControlButton" data-target="speedSlider">Morph</button>
     </div>
     
@@ -326,12 +326,12 @@
     <div class="control-group">
         <label for="morphVelocitySlider">Morph</label>
         <span id="morphVelocityValue">5</span>
-        <input type="range" id="morphVelocitySlider" min="1" max="120" value="5">
+        <input type="range" id="morphVelocitySlider" min="1" max="60" value="5">
           </div>
     <div class="control-group">
         <label for="autoSlider">Auto</label>
         <span id="autoValue">10</span>
-        <input type="range" id="autoSlider" min="1" max="1600" value="10" data-key-up="l" data-key-down="k">
+        <input type="range" id="autoSlider" min="1" max="800" value="10" data-key-up="L" data-key-down="K">
         
     </div>
    
@@ -418,8 +418,7 @@ let fps = 0;
                 }
             }
 
-            angleOffset += rotationSpeed;
-            document.getElementById('bpmDisplay').textContent = `BPM: ${bpm}`;
+            angleOffset += rotationSpeed; 
         } catch (e) {
             console.error('Error in draw function:', e);
         }
@@ -656,6 +655,8 @@ let fps = 0;
             document.getElementById('lightValue').textContent = lightSlider.value;
         });
 
+        
+
         // Initialize values from sliders
         updateValuesFromSliders();
     }
@@ -773,15 +774,20 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
             }, morphDuration); // 10 seconds
 
             // Smooth transition to random values
+            let c = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2)
+            smoothTransition(document.getElementById('growthSlider'), c);
+            if (c > 0.97){ 
+                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 5));
+            }
+            else{
+                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
+            }
             smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
-            smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
-            smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 14));
-           // 
+            smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 10));
             smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
             smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 140));
             smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 5));
             smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(5, 12));
-            smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
             smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
             smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
             smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
@@ -789,7 +795,7 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
             smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(2, 100));
             smoothTransition(document.getElementById('lightSlider'), getRandomValue(2, 100));
             if (getRandomValue(1,10) == 1){
-                        smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 20));
+                smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 12));
             }
         });
              
@@ -804,15 +810,24 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
       
 
         // Instantly set random values without smooth transition
+        let cc =  (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
+        document.getElementById('growthSlider').value = cc
+
+        if (cc > 0.97){
+        
+        document.getElementById('structureSpeedSlider').value = getRandomValue(1, 5);
+
+}
+else{       
+     document.getElementById('structureSpeedSlider').value = getRandomValue(1, 14);
+}
         document.getElementById('speedSlider').value = getRandomValue(-10, 10);
-        document.getElementById('structureSpeedSlider').value = getRandomValue(1, 14);
         document.getElementById('layerSlider').value = getRandomValue(2, 14);
         document.getElementById('pointsSlider').value = getRandomValue(5, 20);
         document.getElementById('distortionSlider').value = getRandomValue(0, 100);
         document.getElementById('backgroundSlider').value = getRandomValue(0, 255);
         document.getElementById('strokeWidthSlider').value = getRandomValue(1, 4);
         document.getElementById('polygonPointsSlider').value = getRandomValue(3, 12);
-        document.getElementById('growthSlider').value = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
         document.getElementById('blurFactorSlider').value = getRandomValue(2, 8);
         document.getElementById('baseHueSlider').value = getRandomValue(0, 360);
         document.getElementById('colorShiftSlider').value = getRandomValue(0, 360);
@@ -865,9 +880,18 @@ function calculateFPS() {
     const currentTime = performance.now();
     fps = Math.round(1000 / (currentTime - lastTime));
     lastTime = currentTime;
-    document.getElementById('fpsValue').textContent = fps;
-}
 
+    // Update FPS display only occasionally
+    if (Math.random() < 0.1) { // 10% chance to update
+        document.getElementById('fpsValue').textContent = fps;
+    }
+
+    if (fps < 20) {
+        document.getElementById('fpsDisplay').style.visibility = 'visible';
+    } else {
+        document.getElementById('fpsDisplay').style.visibility = 'hidden';
+    }
+}
 function draw() {
     try {
         calculateFPS(); // Calculate FPS for each frame
