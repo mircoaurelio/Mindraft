@@ -46,32 +46,36 @@
             box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);
             height: calc(100% - 100px);
             overflow-y: auto;
-            width: 150px;
+            width: 250px;
             visibility: hidden;
         }
         .control-group {
+            display: flex;
             margin-bottom: 5px;
     background-color: #444;
     padding: 8px 12px;
     border-radius: 8px;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0.1, 0.4);
+    box-shadow: 0px 3px 5px rgba(0, 0, 0.1, 0.1);
+    justify-content: space-between;
+    align-items: center;
         }
-        .control-group label {
+        .control-group label, .control-group span {
             font-size: 12px;
-    color: #bbbbbbbd;
-    margin-bottom: -4px;
-    display: block;
+            color: #bbbbbbbd;
+            margin-bottom: -4px;
+            display: block;
+            min-width: 17%;
         }
         .control-group span {
             font-size: 16px;
             color: #fff;
-            margin-bottom: 5px;
+            margin-TOP: 1px;
             display: block;
         }
         .control-group input[type="range"] {
             -webkit-appearance: none;
-            width: 100%;
             height: 4px;
+            WIDTH: 264%;
             background: #ddd;
             outline: none;
             opacity: 0.7;
@@ -100,7 +104,9 @@
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
         }
  .control-group span {
-         display: none! important;
+         font-size: 10px;
+         TEXT-ALIGN: right;
+         margin-right: 13px;
         }
      
         #toggleButton, #saveStateButton {
@@ -132,6 +138,19 @@
             cursor: pointer;
             margin-top: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .morphControlButton{
+            color: red;
+            background: #7d52ba;
+            width: 10px;
+            border: 0px;
+            font-size: 0px;
+            border-radius: 14px;
+            cursor: pointer;
+            height: 11px;
+            display: block;
+    position: absolute;
+    right: 12px;
         }
         #saveStateButton {
             top: 50px;
@@ -171,80 +190,103 @@
 <body>
 <div id="controls" style="visibility: hidden;">
     <!-- Controls -->
+    <label>Controls</label>
     <div class="control-group">
-        <label for="speedSlider">Rotation Speed</label>
-        <span id="speedValue">2</span>
-        <input type="range" id="speedSlider" min="-10" max="10" value="2">
-    </div>
-    <div class="control-group">
-        <label for="structureSpeedSlider">Structure Speed</label>
-        <span id="structureSpeedValue">8</span>
-        <input type="range" id="structureSpeedSlider" min="1" max="14" value="8">
-    </div>
-    <div class="control-group">
-        <label for="layerSlider">Layers</label>
-        <span id="layerValue">10</span>
-        <input type="range" id="layerSlider" min="1" max="20" value="10">
-    </div>
-    <div class="control-group">
-        <label for="pointsSlider">Points</label>
-        <span id="pointsValue">12</span>
-        <input type="range" id="pointsSlider" min="0" max="20" value="12">
-    </div>
-    <div class="control-group">
-        <label for="distortionSlider">Distortion</label>
-        <span id="distortionValue">50</span>
-        <input type="range" id="distortionSlider" min="0" max="100" value="50">
-    </div>
-    <div class="control-group">
-        <label for="backgroundSlider">Background Alpha</label>
+        <label for="backgroundSlider">Alpha</label>
         <span id="backgroundValue">50</span>
-        <input type="range" id="backgroundSlider" min="0" max="255" value="50">
-    </div>
-    <div class="control-group">
-        <label for="strokeWidthSlider">Stroke Width</label>
-        <span id="strokeWidthValue">2</span>
-        <input type="range" id="strokeWidthSlider" min="1" max="10" value="2">
-    </div>
-    <div class="control-group">
-        <label for="polygonPointsSlider">Polygon Points</label>
-        <span id="polygonPointsValue">6</span>
-        <input type="range" id="polygonPointsSlider" min="3" max="12" value="6">
+        <input type="range" id="backgroundSlider" min="0" max="255" step="2" value="50" data-key-up="5" data-key-down="1" data-key-morph="<">
+        <button class="morphControlButton" data-target="backgroundSlider">Morph</button>
     </div>
     <div class="control-group">
         <label for="growthSlider">Growth</label>
         <span id="growthValue">1</span>
-        <input type="range" id="growthSlider" min="0.9" max="1.08" step="0.01" value="1">
+        <input type="range" id="growthSlider" min="0.9" max="1.08" step="0.005" value="1" data-key-up="q" data-key-down="a" data-key-morph="z">
+        <button class="morphControlButton" data-target="growthSlider">Morph</button>
     </div>
     <div class="control-group">
-        <label for="blurFactorSlider">Blur Factor</label>
-        <span id="blurFactorValue">4</span>
-        <input type="range" id="blurFactorSlider" min="2" max="8" value="4">
+        <label for="structureSpeedSlider">Speed</label>
+        <span id="structureSpeedValue">8</span>
+        <input type="range" id="structureSpeedSlider" min="1" max="14" value="8" data-key-up="w" data-key-down="s" data-key-morph="x">
+        <button class="morphControlButton" data-target="structureSpeedSlider">Morph</button>
+    </div>
+  
+    <div class="control-group">
+        <label for="distortionSlider">Distortion</label>
+        <span id="distortionValue">50</span>
+        <input type="range" id="distortionSlider" min="0" max="100" value="50" data-key-up="e" data-key-down="d" data-key-morph="c">
+        <button class="morphControlButton" data-target="distortionSlider">Morph</button>
     </div>
     <div class="control-group">
-        <label for="baseHueSlider">Base Hue</label>
-        <span id="baseHueValue">180</span>
-        <input type="range" id="baseHueSlider" min="0" max="360" value="180">
+        <label for="speedSlider">Rotation</label>
+        <span id="speedValue">2</span>
+        <input type="range" id="speedSlider" min="-10" max="10" value="2"  step="0.3" data-key-up="r" data-key-down="f" data-key-morph="v">
+        <button class="morphControlButton" data-target="speedSlider">Morph</button>
     </div>
     <div class="control-group">
-        <label for="colorShiftSlider">Color Shift</label>
-        <span id="colorShiftValue">0</span>
-        <input type="range" id="colorShiftSlider" min="0" max="360" value="0">
+        <label for="blurFactorSlider">Revolution</label>
+        <span id="blurFactorValue">1</span>
+        <input type="range" id="blurFactorSlider" min="0" max="12" value="1" data-key-up="t" data-key-down="g" data-key-morph="b">
+        <button class="morphControlButton" data-target="blurFactorSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="layerSlider">Layers</label>
+        <span id="layerValue">10</span>
+        <input type="range" id="layerSlider" min="2" max="20" value="10" data-key-up="y" data-key-down="h" data-key-morph="n">
+        <button class="morphControlButton" data-target="layerSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="pointsSlider">Points</label>
+        <span id="pointsValue">12</span>
+        <input type="range" id="pointsSlider" min="3" max="20" value="12" data-key-up="u" data-key-down="j" data-key-morph="m">
+        <button class="morphControlButton" data-target="pointsSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="polygonPointsSlider">Polygon</label>
+        <span id="polygonPointsValue">6</span>
+        <input type="range" id="polygonPointsSlider" min="3" max="12" value="6" data-key-up="i" data-key-down="k" data-key-morph=",">
+        <button class="morphControlButton" data-target="polygonPointsSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="strokeWidthSlider">Stroke</label>
+        <span id="strokeWidthValue">2</span>
+        <input type="range" id="strokeWidthSlider" min="0.1" max="6" value="2" step="0.2" data-key-up="o" data-key-down="l" data-key-morph=".">
+        <button class="morphControlButton" data-target="strokeWidthSlider">Morph</button>
     </div>
     <div class="control-group">
         <label for="saturationSlider">Saturation</label>
         <span id="saturationValue">100</span>
-        <input type="range" id="saturationSlider" min="0" max="100" value="100">
+        <input type="range" id="saturationSlider" min="0" max="100" value="100" data-key-up="p" data-key-down="ò" data-key-morph="-">
+        <button class="morphControlButton" data-target="saturationSlider">Morph</button>
     </div>
     <div class="control-group">
         <label for="brightnessSlider">Brightness</label>
         <span id="brightnessValue">100</span>
-        <input type="range" id="brightnessSlider" min="0" max="100" value="100">
+        <input type="range" id="brightnessSlider" min="0" max="100" value="100" data-key-up="è" data-key-down="à" data-key-morph="ù">
+        <button class="morphControlButton" data-target="brightnessSlider">Morph</button>
     </div>
     <div class="control-group">
-        <label for="lightSlider">Light (Glow)</label>
+        <label for="lightSlider">Light</label>
         <span id="lightValue">50</span>
-        <input type="range" id="lightSlider" min="0" max="100" value="50">
+        <input type="range" id="lightSlider" min="1" max="100" value="50" data-key-up="'" data-key-down="ì" data-key-morph="+">
+        <button class="morphControlButton" data-target="lightSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="baseHueSlider">Hue</label>
+        <span id="baseHueValue">180</span>
+        <input type="range" id="baseHueSlider" min="0" max="360" value="180" data-key-up="ArrowRight" data-key-down="ArrowLeft" data-key-morph="ctrl">
+        <button class="morphControlButton" data-target="baseHueSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="colorShiftSlider">Color</label>
+        <span id="colorShiftValue">0</span>
+        <input type="range" id="colorShiftSlider" min="0" max="360" value="0" data-key-up="ArrowUp" data-key-down="ArrowDown">
+        <button class="morphControlButton" data-target="colorShiftSlider">Morph</button>
+    </div>
+    <div class="control-group">
+        <label for="morphVelocitySlider">Morph Velocity</label>
+        <span id="morphVelocityValue">5</span>
+        <input type="range" id="morphVelocitySlider" min="1" max="20" value="5">
+        <button class="morphControlButton" data-target="morphVelocitySlider">Morph</button>
     </div>
 </div>
 <div id="bpmDisplay" style="display: none;"></div>
@@ -278,7 +320,7 @@
     let bpm = 0;
     let bpmHistory = [];
     let lastPressTime = 0;
-
+    let morphDuration = 5000;
     let canRandomize = true; // Variable to control randomize button timing
 
     function setup() {
@@ -292,8 +334,7 @@
         setupSaveStateButton();
         setupRandomizeButton();
         setupMorphButton();
-        window.addEventListener('keydown', handleKeyPress);
-
+      
         // Randomize initial parameters
         randomizeParameters();
     }
@@ -332,38 +373,62 @@
     }
 
     class Structure {
-        constructor(startScale) {
-            this.scaleFactor = startScale;
-            this.strokeWeight = strokeWidth;
+    constructor(startScale) {
+        this.scaleFactor = startScale;
+        this.strokeWeight = strokeWidth;
+        this.x = width / 2;
+        this.y = height / 2;
+    }
+
+    update() {
+        this.scaleFactor *= growth;
+        this.scaleFactor += structureSpeed;
+        this.strokeWeight = map(this.scaleFactor, 1, 4, strokeWidth, 1);
+    }
+
+    display() {
+        // Check if the structure should be rendered
+        if (!this.shouldRender()) {
+            return;
         }
 
-        update() {
-            this.scaleFactor *= growth;
-            this.scaleFactor += structureSpeed;
-            this.strokeWeight = map(this.scaleFactor, 1, 4, strokeWidth, 1);
-        }
-
-        display() {
-            try {
-                push();
-                translate(width / 2, height / 2);
-                scale(this.scaleFactor);
-                strokeWeight(this.strokeWeight);
-                drawSymmetricPattern();
-                pop();
-            } catch (e) {
-                console.error('Error in Structure display:', e);
-            }
-        }
-
-        isTooLarge() {
-            return this.scaleFactor > 4;
-        }
-
-        shouldCreateNew() {
-            return this.scaleFactor > 1.2 && this.scaleFactor < 1.3;
+        try {
+            push();
+            translate(this.x, this.y);
+            scale(this.scaleFactor);
+            strokeWeight(this.strokeWeight);
+            drawSymmetricPattern();
+            pop();
+        } catch (e) {
+            console.error('Error in Structure display:', e);
         }
     }
+
+    isTooLarge() {
+        return this.scaleFactor > 4;
+    }
+
+    shouldCreateNew() {
+        return this.scaleFactor > 1.2 && this.scaleFactor < 1.3;
+    }
+
+    shouldRender() {
+        // Calculate bounding box based on scaleFactor and maxRadius
+        let maxSize = this.scaleFactor * maxRadius;
+        let minX = this.x - maxSize;
+        let maxX = this.x + maxSize;
+        let minY = this.y - maxSize;
+        let maxY = this.y + maxSize;
+
+        // Check if the bounding box is within the visible canvas
+        if (maxX < 0 || minX > width || maxY < 0 || minY > height) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
 
     function drawSymmetricPattern() {
         try {
@@ -428,6 +493,7 @@
     }
 
     function setupControls() {
+        const morphVelocitySlider = document.getElementById('morphVelocitySlider');
         const speedSlider = document.getElementById('speedSlider');
         const structureSpeedSlider = document.getElementById('structureSpeedSlider');
         const layerSlider = document.getElementById('layerSlider');
@@ -443,6 +509,13 @@
         const saturationSlider = document.getElementById('saturationSlider');
         const brightnessSlider = document.getElementById('brightnessSlider');
         const lightSlider = document.getElementById('lightSlider');
+
+        morphVelocitySlider.addEventListener('input', function() {
+            morphDuration = morphVelocitySlider.value * 1000;
+            document.getElementById('morphVelocityValue').textContent = morphVelocitySlider.value;
+        });
+         
+        morphDuration = parseInt(morphVelocitySlider.value, 10) * 1000;
 
         speedSlider.addEventListener('input', function() {
             rotationSpeed = parseFloat(speedSlider.value) / 100;
@@ -546,7 +619,7 @@
         points = parseInt(pointsSlider.value, 10);
         distortionFactor = distortionSlider.value / 100;
         backgroundAlpha = parseInt(backgroundSlider.value, 10);
-        strokeWidth = parseInt(strokeWidthSlider.value, 10);
+        strokeWidth = parseInt(strokeWidthSlider.value, 2);
         polygonPoints = parseInt(polygonPointsSlider.value, 10);
         growth = parseFloat(growthSlider.value);
         blurFactor = parseInt(blurFactorSlider.value, 10);
@@ -603,61 +676,76 @@
         const randomizeButton = document.getElementById('randomizeButton');
 
         randomizeButton.addEventListener('click', function() {
-            if (!canRandomize) return; // Prevent multiple clicks within 10 seconds
-
-            // Disable the button and set a timer to re-enable it
-            canRandomize = false;
-            randomizeButton.disabled = true;
+        
+const morphControlButtons = document.querySelectorAll('.morphControlButton');           
+           
+      // Hide the buttons
+             morphButton.style.display = 'none';
+            randomizeButton.style.display = 'none';
+            morphControlButtons.forEach(button => {
+    button.style.display = 'none';
+});
             setTimeout(() => {
-                canRandomize = true;
-                randomizeButton.disabled = false;
-            }, 10000); // 10 seconds
+                morphButton.style.display = 'block';
+            randomizeButton.style.display = 'block';
+            morphControlButtons.forEach(button => {
+        button.style.display = 'block';
+    });
+            }, 5000); // 10 seconds
 
             // Smooth transition to random values
             smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
-            smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 14));
-            smoothTransition(document.getElementById('layerSlider'), getRandomValue(1, 20));
-            smoothTransition(document.getElementById('pointsSlider'), getRandomValue(0, 20));
+            smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
+            smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 14));
+            smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 20));
             smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
             smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 255));
-            smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 10));
-            smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(3, 12));
+            smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 5));
+            smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(5, 12));
             smoothTransition(document.getElementById('growthSlider'), (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2));
             smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
             smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
             smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
-            smoothTransition(document.getElementById('saturationSlider'), getRandomValue(0, 100));
-            smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(0, 100));
-            smoothTransition(document.getElementById('lightSlider'), getRandomValue(0, 100));
+            smoothTransition(document.getElementById('saturationSlider'), getRandomValue(2, 100));
+            smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(2, 100));
+            smoothTransition(document.getElementById('lightSlider'), getRandomValue(2, 100));
         });
+             
+        
     }
 
     function setupMorphButton() {
-        const morphButton = document.getElementById('morphButton');
+    const morphButton = document.getElementById('morphButton');
+    const randomizeButton = document.getElementById('randomizeButton');
 
-        morphButton.addEventListener('click', function() {
-            // Instantly set random values without smooth transition
-            document.getElementById('speedSlider').value = getRandomValue(-10, 10);
-            document.getElementById('structureSpeedSlider').value = getRandomValue(1, 14);
-            document.getElementById('layerSlider').value = getRandomValue(1, 20);
-            document.getElementById('pointsSlider').value = getRandomValue(0, 20);
-            document.getElementById('distortionSlider').value = getRandomValue(0, 100);
-            document.getElementById('backgroundSlider').value = getRandomValue(0, 255);
-            document.getElementById('strokeWidthSlider').value = getRandomValue(1, 10);
-            document.getElementById('polygonPointsSlider').value = getRandomValue(3, 12);
-            document.getElementById('growthSlider').value = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
-            document.getElementById('blurFactorSlider').value = getRandomValue(2, 8);
-            document.getElementById('baseHueSlider').value = getRandomValue(0, 360);
-            document.getElementById('colorShiftSlider').value = getRandomValue(0, 360);
-            document.getElementById('saturationSlider').value = getRandomValue(0, 100);
-            document.getElementById('brightnessSlider').value = getRandomValue(0, 100);
-            document.getElementById('lightSlider').value = getRandomValue(0, 100);
+    morphButton.addEventListener('click', function() {
+      
 
-            // Trigger input events to apply changes
-            const sliders = document.querySelectorAll('input[type="range"]');
-            sliders.forEach(slider => slider.dispatchEvent(new Event('input')));
-        });
-    }
+        // Instantly set random values without smooth transition
+        document.getElementById('speedSlider').value = getRandomValue(-10, 10);
+        document.getElementById('structureSpeedSlider').value = getRandomValue(1, 14);
+        document.getElementById('layerSlider').value = getRandomValue(2, 14);
+        document.getElementById('pointsSlider').value = getRandomValue(5, 20);
+        document.getElementById('distortionSlider').value = getRandomValue(0, 100);
+        document.getElementById('backgroundSlider').value = getRandomValue(0, 255);
+        document.getElementById('strokeWidthSlider').value = getRandomValue(1, 4);
+        document.getElementById('polygonPointsSlider').value = getRandomValue(3, 12);
+        document.getElementById('growthSlider').value = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
+        document.getElementById('blurFactorSlider').value = getRandomValue(2, 8);
+        document.getElementById('baseHueSlider').value = getRandomValue(0, 360);
+        document.getElementById('colorShiftSlider').value = getRandomValue(0, 360);
+        document.getElementById('saturationSlider').value = getRandomValue(2, 100);
+        document.getElementById('brightnessSlider').value = getRandomValue(2, 100);
+        document.getElementById('lightSlider').value = getRandomValue(2, 100);
+
+        // Trigger input events to apply changes
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => slider.dispatchEvent(new Event('input')));
+
+ 
+    });
+}
+
 
     function smoothTransition(slider, targetValue) {
         const currentValue = parseFloat(slider.value);
@@ -682,28 +770,166 @@
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function handleKeyPress(event) {
-        if (event.code === 'Enter') {
-            const currentTime = millis();
-            if (lastPressTime > 0) {
-                const interval = currentTime - lastPressTime;
-                const currentBpm = 60000 / interval;
-                bpmHistory.push(currentBpm);
-
-                if (bpmHistory.length > 5) bpmHistory.shift(); // Keep last 5 values
-                bpm = Math.round(bpmHistory.reduce((a, b) => a + b) / bpmHistory.length);
-                
-                structureSpeed = bpm / 100;
-                document.getElementById('structureSpeedSlider').value = structureSpeed * 100;
-            }
-            lastPressTime = currentTime;
-        }
-    }
-
+   
     function randomizeParameters() {
         document.getElementById('randomizeButton').click();
     }
+   //document.addEventListener('keydown', function(event) {
+   //    const controlGroups = document.querySelectorAll('.control-group');
+   //    
+   //    controlGroups.forEach(group => {
+   //        const slider = group.querySelector('input[type="range"]');
+   //        const morphButton = group.querySelector('.morphControlButton');
+   //        const keyUp = slider.getAttribute('data-key-up');
+   //        const keyDown = slider.getAttribute('data-key-down');
+   //        const keyMorph = slider.getAttribute('data-key-morph');
+
+   //        if (event.key === keyUp) {
+   //            adjustSlider(slider.id, 1);
+   //        } else if (event.key === keyDown) {
+   //            adjustSlider(slider.id, -1);
+   //        } else if (event.key === keyMorph) {
+   //            morphButton.click();
+   //        }
+   //    });
+
+   //    if (event.key === 'Enter') {
+   //        document.getElementById('randomizeButton').click();
+   //    } else if (event.key === '') {
+   //        document.getElementById('morphButton').click();
+   //    } else if (event.key === '\\') {
+   //        document.getElementById('toggleButton').click();
+   //    }
+   //});
+
+   let pressedKeys = {};
+
+document.addEventListener('keydown', function(event) {
+    pressedKeys[event.key] = true; // Mark this key as pressed
+
+    handleKeyPresses();
+});
+
+document.addEventListener('keyup', function(event) {
+    delete pressedKeys[event.key]; // Remove the key from pressed keys
+});
+
+function handleKeyPresses() {
+    const controlGroups = document.querySelectorAll('.control-group');
+
+    controlGroups.forEach(group => {
+        const slider = group.querySelector('input[type="range"]');
+        const keyUp = slider.getAttribute('data-key-up');
+        const keyDown = slider.getAttribute('data-key-down');
+        const keyMorph = slider.getAttribute('data-key-morph');
+        const morphButton = group.querySelector('.morphControlButton');
+
+        if (pressedKeys[keyUp]) {
+            adjustSlider(slider.id, 1);
+        }
+        if (pressedKeys[keyDown]) {
+            adjustSlider(slider.id, -1);
+        }
+        if (pressedKeys[keyMorph] && morphButton.style.display !== 'none') {
+            morphButton.click();
+        }
+    });
+
+    if (pressedKeys['Enter'] && document.getElementById('randomizeButton').style.display !== 'none') {
+            document.getElementById('randomizeButton').click();
+    } else if (pressedKeys[' '] && document.getElementById('morphButton').style.display !== 'none')  {
+        document.getElementById('morphButton').click();
+    } else if (pressedKeys['\\']) {
+        document.getElementById('toggleButton').click();
+    }
+}
+
  
+
+function adjustSlider(sliderId, step) {
+    const slider = document.getElementById(sliderId);
+    slider.value = parseFloat(slider.value) + step * parseFloat(slider.step || 1);
+    slider.dispatchEvent(new Event('input'));
+}
+
+    // Smooth transition function (already in your code)
+    function smoothTransition(slider, targetValue) {
+        const currentValue = parseFloat(slider.value);
+        const duration = 5000; // 5 seconds
+        const steps = 100;
+        const stepTime = duration / steps;
+        const valueIncrement = (targetValue - currentValue) / steps;
+
+        let stepCount = 0;
+        const interval = setInterval(() => {
+            stepCount++;
+            slider.value = currentValue + valueIncrement * stepCount;
+            slider.dispatchEvent(new Event('input'));
+
+            if (stepCount >= steps) {
+                clearInterval(interval);
+            }
+        }, stepTime);
+    }
+
+    // Function for randomizing the values
+    function getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Individual Morph button implementation
+    document.querySelectorAll('.morphControlButton').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = button.getAttribute('data-target');
+            const slider = document.getElementById(targetId);
+
+            // Hide the button while morphing
+            button.style.display = 'none';
+
+            // Set a random value for the corresponding slider
+            let randomValue;
+            backgroundSlider
+            if (targetId === 'backgroundSlider') {
+                randomValue = getRandomValue(0, 360);
+            } else if (targetId === 'growthSlider') {
+                randomValue = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
+            } else if (targetId === 'structureSpeedSlider') {
+                randomValue = getRandomValue(1, 14);
+            } else if (targetId === 'speedSlider') {
+                randomValue = 0;
+            } else if (targetId === 'distortionSlider') {
+                randomValue = getRandomValue(0, 100);
+            } else if (targetId === 'blurFactorSlider') {
+                randomValue = getRandomValue(0, 12);
+            } else if (targetId === 'layerSlider') {
+                randomValue = getRandomValue(2, 20);
+            } else if (targetId === 'pointsSlider') {
+                randomValue = getRandomValue(3, 20);
+            } else if (targetId === 'polygonPointsSlider') {
+                randomValue = getRandomValue(3, 12);
+            } else if (targetId === 'strokeWidthSlider') {
+                randomValue = getRandomValue(1, 6);
+            } else if (targetId === 'saturationSlider') {
+                randomValue = getRandomValue(0, 100);
+            } else if (targetId === 'brightnessSlider') {
+                randomValue = getRandomValue(0, 100);
+            } else if (targetId === 'lightSlider') {
+                randomValue = getRandomValue(1, 100);
+            } else if (targetId === 'baseHueSlider') {
+                randomValue = getRandomValue(0, 360);
+            } else if (targetId === 'colorShiftSlider') {
+                randomValue = getRandomValue(0, 360);
+            }
+
+            smoothTransition(slider, randomValue);
+
+            // Show the button again after morphing
+            setTimeout(() => {
+                button.style.display = 'block';
+            }, 5000); // Adjust the timeout duration as needed
+        });
+    });
+
 </script>
 </body>
 </html>
