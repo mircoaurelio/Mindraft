@@ -32,7 +32,34 @@
         #controls::-webkit-scrollbar-thumb:hover {
             background-color: #555;  
         }
+        .highlight {
+            animation: highlightFadeOut 3s;
+      
+        }
 
+        @keyframes highlightFadeOut {
+            0% {
+                background-color: rgba(247, 0, 255, 0.5);
+            }
+            100% {
+                background-color: transparent;
+            }
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .control-group {
+            position: relative;
+        }
         #controls {
             position: absolute;
             top: 0;
@@ -185,16 +212,20 @@
             height: 60px;
             border: none;
         }
+        .label-control-group{
+            margin: 2px 0; 
+            color: #bbbbbbbd;
+            font-size: 10px;;
+        }
     </style>
 </head>
 <body>
 <div id="controls" style="visibility: hidden;">
-    <!-- Controls -->
-    <label>Controls</label>
+    <p class="label-control-group" >Controls</p>
     <div class="control-group">
         <label for="backgroundSlider">Alpha</label>
         <span id="backgroundValue">50</span>
-        <input type="range" id="backgroundSlider" min="0" max="255" step="2" value="50" data-key-up="5" data-key-down="1" data-key-morph="<">
+        <input type="range" id="backgroundSlider" min="0" max="255" step="2" value="50" data-key-up="2" data-key-down="1" data-key-morph="<">
         <button class="morphControlButton" data-target="backgroundSlider">Morph</button>
     </div>
     <div class="control-group">
@@ -222,6 +253,9 @@
         <input type="range" id="speedSlider" min="-10" max="10" value="2"  step="0.3" data-key-up="r" data-key-down="f" data-key-morph="v">
         <button class="morphControlButton" data-target="speedSlider">Morph</button>
     </div>
+    
+   
+    <p class="label-control-group" >Structure</p>
     <div class="control-group">
         <label for="blurFactorSlider">Revolution</label>
         <span id="blurFactorValue">1</span>
@@ -252,7 +286,11 @@
         <input type="range" id="strokeWidthSlider" min="0.1" max="6" value="2" step="0.2" data-key-up="o" data-key-down="l" data-key-morph=".">
         <button class="morphControlButton" data-target="strokeWidthSlider">Morph</button>
     </div>
+    
+   
+    <p class="label-control-group" >Colors</p>
     <div class="control-group">
+        
         <label for="saturationSlider">Saturation</label>
         <span id="saturationValue">100</span>
         <input type="range" id="saturationSlider" min="0" max="100" value="100" data-key-up="p" data-key-down="ò" data-key-morph="-">
@@ -282,8 +320,10 @@
         <input type="range" id="colorShiftSlider" min="0" max="360" value="0" data-key-up="ArrowUp" data-key-down="ArrowDown">
         <button class="morphControlButton" data-target="colorShiftSlider">Morph</button>
     </div>
+    
+    <p class="label-control-group" >Automations</p>
     <div class="control-group">
-        <label for="morphVelocitySlider">Morph Velocity</label>
+        <label for="morphVelocitySlider">Morph</label>
         <span id="morphVelocityValue">5</span>
         <input type="range" id="morphVelocitySlider" min="1" max="20" value="5">
         <button class="morphControlButton" data-target="morphVelocitySlider">Morph</button>
@@ -292,8 +332,8 @@
 <div id="bpmDisplay" style="display: none;"></div>
 <button id="toggleButton">Show Controls</button>
 <button style="display: none;" id="saveStateButton">Share</button> 
-<button id="randomizeButton">Morph</button>
-<button id="morphButton">Randomize</button>
+<button title="Press Enter" id="randomizeButton">Morph</button>
+<button title="Press Spacebar" id="morphButton">Randomize</button>
 <div id="mixcloudPlayerContainer">
     <iframe width="130%" height="60" src="https://player-widget.mixcloud.com/widget/iframe/?hide_cover=1&mini=1&hide_artwork=1&autoplay=1&feed=%2Frydhmdee%2Fcosmic-energy-psytrance-mix-2017-rydhm-dee%2F" frameborder="0" allow="autoplay"></iframe></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
@@ -747,11 +787,10 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
 }
 
 
-    function smoothTransition(slider, targetValue) {
+function smoothTransition(slider, targetValue) {
         const currentValue = parseFloat(slider.value);
-        const duration = 5000; // 5 seconds
         const steps = 100;
-        const stepTime = duration / steps;
+        const stepTime = morphDuration / steps;
         const valueIncrement = (targetValue - currentValue) / steps;
 
         let stepCount = 0;
@@ -765,6 +804,78 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
             }
         }, stepTime);
     }
+
+    // Function to highlight a control group
+    function highlightControlGroup(controlGroup) {
+        controlGroup.classList.add('highlight');
+        setTimeout(() => {
+            controlGroup.classList.remove('highlight');
+        }, 1000); // 1 second highlight duration
+    }
+
+    // Updated individual Morph button implementation
+    document.querySelectorAll('.morphControlButton').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = button.getAttribute('data-target');
+            const slider = document.getElementById(targetId);
+            const controlGroup = button.parentElement;
+
+            // Highlight the control group
+            highlightControlGroup(controlGroup);
+
+            // Set a random value for the corresponding slider
+            let randomValue = getRandomValueForSlider(targetId);
+            smoothTransition(slider, randomValue);
+
+            // Hide the button while morphing
+            button.style.display = 'none';
+
+            // Show the button again after morphing
+            setTimeout(() => {
+                button.style.display = 'block';
+            }, morphDuration);
+        });
+    });
+
+    // Function to get a random value for each slider
+    function getRandomValueForSlider(targetId) {
+        if (targetId === 'backgroundSlider') {
+            return getRandomValue(0, 360);
+        } else if (targetId === 'growthSlider') {
+            return (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
+        } else if (targetId === 'structureSpeedSlider') {
+            return getRandomValue(1, 14);
+        } else if (targetId === 'speedSlider') {
+            return 0;
+        } else if (targetId === 'distortionSlider') {
+            return getRandomValue(0, 100);
+        } else if (targetId === 'blurFactorSlider') {
+            return getRandomValue(0, 12);
+        } else if (targetId === 'layerSlider') {
+            return getRandomValue(2, 20);
+        } else if (targetId === 'pointsSlider') {
+            return getRandomValue(3, 20);
+        } else if (targetId === 'polygonPointsSlider') {
+            return getRandomValue(3, 12);
+        } else if (targetId === 'strokeWidthSlider') {
+            return getRandomValue(1, 6);
+        } else if (targetId === 'saturationSlider') {
+            return getRandomValue(0, 100);
+        } else if (targetId === 'brightnessSlider') {
+            return getRandomValue(0, 100);
+        } else if (targetId === 'lightSlider') {
+            return getRandomValue(1, 100);
+        } else if (targetId === 'baseHueSlider') {
+            return getRandomValue(0, 360);
+        } else if (targetId === 'colorShiftSlider') {
+            return getRandomValue(0, 360);
+        } else if (targetId === 'morphVelocitySlider') {
+            return getRandomValue(1, 20);
+        }
+        return 0;
+    }
+
+   
 
     function getRandomValue(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -803,10 +914,8 @@ const morphControlButtons = document.querySelectorAll('.morphControlButton');
    //});
 
    let pressedKeys = {};
-
-document.addEventListener('keydown', function(event) {
+   document.addEventListener('keydown', function(event) {
     pressedKeys[event.key] = true; // Mark this key as pressed
-
     handleKeyPresses();
 });
 
@@ -826,9 +935,11 @@ function handleKeyPresses() {
 
         if (pressedKeys[keyUp]) {
             adjustSlider(slider.id, 1);
+            highlightControlGroup(group); // Highlight the control group
         }
         if (pressedKeys[keyDown]) {
             adjustSlider(slider.id, -1);
+            highlightControlGroup(group); // Highlight the control group
         }
         if (pressedKeys[keyMorph] && morphButton.style.display !== 'none') {
             morphButton.click();
@@ -836,7 +947,7 @@ function handleKeyPresses() {
     });
 
     if (pressedKeys['Enter'] && document.getElementById('randomizeButton').style.display !== 'none') {
-            document.getElementById('randomizeButton').click();
+        document.getElementById('randomizeButton').click();
     } else if (pressedKeys[' '] && document.getElementById('morphButton').style.display !== 'none')  {
         document.getElementById('morphButton').click();
     } else if (pressedKeys['\\']) {
@@ -844,6 +955,36 @@ function handleKeyPresses() {
     }
 }
 
+function adjustSlider(sliderId, step) {
+    const slider = document.getElementById(sliderId);
+    slider.value = parseFloat(slider.value) + step * parseFloat(slider.step || 1);
+    slider.dispatchEvent(new Event('input'));
+}
+
+function highlightControlGroup(controlGroup) {
+    controlGroup.classList.add('highlight');
+    setTimeout(() => {
+        controlGroup.classList.remove('highlight');
+    }, 1000); // 1 second highlight duration
+}
+
+// Tooltip logic for displaying key hints
+const controlGroups = document.querySelectorAll('.control-group');
+controlGroups.forEach(group => {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = `Key: ${group.querySelector('input').dataset.keyUp} / ${group.querySelector('input').dataset.keyDown}`;
+    group.appendChild(tooltip);
+
+    group.addEventListener('mouseover', function() {
+        tooltip.style.display = 'block';
+        tooltip.style.width = '24%';
+        tooltip.style.overflow   = 'hidden';
+    });
+    group.addEventListener('mouseout', function() {
+        tooltip.style.display = 'none';
+    });
+});
  
 
 function adjustSlider(sliderId, step) {
@@ -929,7 +1070,7 @@ function adjustSlider(sliderId, step) {
             }, 5000); // Adjust the timeout duration as needed
         });
     });
-
+   
 </script>
 </body>
 </html>
