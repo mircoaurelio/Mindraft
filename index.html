@@ -226,7 +226,7 @@
     <div class="control-group">
         <label for="backgroundSlider">Alpha</label>
         <span id="backgroundValue">50</span>
-        <input type="range" id="backgroundSlider" min="0" max="255" step="4" value="50" data-key-up="2" data-key-down="1" data-key-morph="<">
+        <input type="range" id="backgroundSlider" min="0" max="180" step="1" value="40" data-key-up="2" data-key-down="1" data-key-morph="<">
         <button class="morphControlButton" data-target="backgroundSlider">Morph</button>
     </div>
     <div class="control-group">
@@ -260,7 +260,7 @@
     <div class="control-group">
         <label for="blurFactorSlider">Revolution</label>
         <span id="blurFactorValue">1</span>
-        <input type="range" id="blurFactorSlider" min="0" max="12" value="1" data-key-up="t" data-key-down="g" data-key-morph="b">
+        <input type="range" id="blurFactorSlider" min="0" max="5" value="1" data-key-up="t" data-key-down="g" data-key-morph="b">
         <button class="morphControlButton" data-target="blurFactorSlider">Morph</button>
     </div>
     <div class="control-group">
@@ -284,7 +284,7 @@
     <div class="control-group">
         <label for="strokeWidthSlider">Stroke</label>
         <span id="strokeWidthValue">2</span>
-        <input type="range" id="strokeWidthSlider" min="0.1" max="6" value="2" step="0.2" data-key-up="o" data-key-down="l" data-key-morph=".">
+        <input type="range" id="strokeWidthSlider" min="1" max="6" value="2" step="0.2" data-key-up="o" data-key-down="l" data-key-morph=".">
         <button class="morphControlButton" data-target="strokeWidthSlider">Morph</button>
     </div>
     
@@ -752,62 +752,234 @@ let fps = 0;
         });
     }
 
-    function setupRandomizeButton() {
-        const randomizeButton = document.getElementById('randomizeButton');
+   //function setupRandomizeButton() {
+   //        const randomizeButton = document.getElementById('randomizeButton');
 
-        randomizeButton.addEventListener('click', function() {
-        
-const morphControlButtons = document.querySelectorAll('.morphControlButton');           
-           
-      // Hide the buttons
-             morphButton.style.display = 'none';
-            randomizeButton.style.display = 'none';
-            morphControlButtons.forEach(button => {
-    button.style.display = 'none';
+   //        randomizeButton.addEventListener('click', function() {
+   //        
+   //         const morphControlButtons = document.querySelectorAll('.morphControlButton');           
+   //        
+   //          // Hide the buttons
+   //            morphButton.style.display = 'none';
+   //            randomizeButton.style.display = 'none';
+   //            morphControlButtons.forEach(button => {
+   //                    button.style.display = 'none';
+   //                });
+   //            setTimeout(() => {
+   //                        morphButton.style.display = 'block';
+   //                    randomizeButton.style.display = 'block';
+   //                    morphControlButtons.forEach(button => {
+   //                button.style.display = 'block';
+   //            });
+   //            }, morphDuration); // 10 seconds
+
+   //            // Smooth transition to random values
+   //            let c = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2)
+   //            smoothTransition(document.getElementById('growthSlider'), c);
+   //            if (c > 0.97){ 
+   //                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 5));
+   //            }
+   //            else{
+   //                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
+   //            }
+   //            smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
+   //            smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 10));
+   //            smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
+   //            smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 140));
+   //            smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 5));
+   //            smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(5, 12));
+   //            smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(1, 5));
+   //            smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
+   //            smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
+   //            smoothTransition(document.getElementById('saturationSlider'), getRandomValue(2, 100));
+   //            smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(2, 100));
+   //            smoothTransition(document.getElementById('lightSlider'), getRandomValue(2, 100));
+   //            if (getRandomValue(1,10) == 1){
+   //                smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 12));
+   //            }
+   //        });
+   //            
+   //        
+   //    }
+// Add an event listener to close the control panel when clicking on the canvas
+document.addEventListener('click', function(event) {
+    const controls = document.getElementById('controls');
+    const isButtonClick = event.target.tagName === 'BUTTON';
+
+    if (controls.style.visibility === 'visible' && !isButtonClick) {
+        controls.style.visibility = 'hidden';
+        document.getElementById('toggleButton').textContent = 'Show Controls';
+    }
 });
-            setTimeout(() => {
-                morphButton.style.display = 'block';
+
+function setupRandomizeButton() {
+    const randomizeButton = document.getElementById('randomizeButton');
+    const morphControlButtons = document.querySelectorAll('.morphControlButton');
+    const frameInterval = 10; // Update UI every 10th frame
+
+    // Variables to store the current state of each parameter
+    let currentState = {
+        growth: parseFloat(document.getElementById('growthSlider').value),
+        structureSpeed: parseFloat(document.getElementById('structureSpeedSlider').value),
+        rotationSpeed: parseFloat(document.getElementById('speedSlider').value),
+        layerCount: parseInt(document.getElementById('layerSlider').value, 10),
+        distortionFactor: parseFloat(document.getElementById('distortionSlider').value),
+        backgroundAlpha: parseInt(document.getElementById('backgroundSlider').value, 10),
+        strokeWidth: parseFloat(document.getElementById('strokeWidthSlider').value),
+        polygonPoints: parseInt(document.getElementById('polygonPointsSlider').value, 10),
+        blurFactor: parseFloat(document.getElementById('blurFactorSlider').value),
+        baseHue: parseInt(document.getElementById('baseHueSlider').value, 10),
+        colorShift: parseInt(document.getElementById('colorShiftSlider').value, 10),
+        saturation: parseInt(document.getElementById('saturationSlider').value, 10),
+        brightness: parseInt(document.getElementById('brightnessSlider').value, 10),
+        lightValue: parseInt(document.getElementById('lightSlider').value, 10)
+    };
+
+    randomizeButton.addEventListener('click', function() {
+        // Hide the buttons temporarily
+        morphButton.style.display = 'none';
+        randomizeButton.style.display = 'none';
+        morphControlButtons.forEach(button => {
+            button.style.display = 'none';
+        });
+
+        setTimeout(() => {
+            morphButton.style.display = 'block';
             randomizeButton.style.display = 'block';
             morphControlButtons.forEach(button => {
-        button.style.display = 'block';
-    });
-            }, morphDuration); // 10 seconds
+                button.style.display = 'block';
+            });
+        }, morphDuration); // 10 seconds
 
-            // Smooth transition to random values
-            let c = (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2)
-            smoothTransition(document.getElementById('growthSlider'), c);
-            if (c > 0.97){ 
-                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 5));
-            }
-            else{
-                smoothTransition(document.getElementById('structureSpeedSlider'), getRandomValue(1, 11));
-            }
-            smoothTransition(document.getElementById('speedSlider'), getRandomValue(-10, 10));
-            smoothTransition(document.getElementById('layerSlider'), getRandomValue(2, 10));
-            smoothTransition(document.getElementById('distortionSlider'), getRandomValue(0, 100));
-            smoothTransition(document.getElementById('backgroundSlider'), getRandomValue(0, 140));
-            smoothTransition(document.getElementById('strokeWidthSlider'), getRandomValue(1, 5));
-            smoothTransition(document.getElementById('polygonPointsSlider'), getRandomValue(5, 12));
-            smoothTransition(document.getElementById('blurFactorSlider'), getRandomValue(2, 8));
-            smoothTransition(document.getElementById('baseHueSlider'), getRandomValue(0, 360));
-            smoothTransition(document.getElementById('colorShiftSlider'), getRandomValue(0, 360));
-            smoothTransition(document.getElementById('saturationSlider'), getRandomValue(2, 100));
-            smoothTransition(document.getElementById('brightnessSlider'), getRandomValue(2, 100));
-            smoothTransition(document.getElementById('lightSlider'), getRandomValue(2, 100));
-            if (getRandomValue(1,10) == 1){
-                smoothTransition(document.getElementById('pointsSlider'), getRandomValue(3, 12));
-            }
-        });
-             
-        
+        // Smoothly transition to random values
+        smoothTransitionToRandomValues(currentState, morphDuration);
+
+        // If controls are visible, start UI update interval
+        if (document.getElementById('controls').style.visibility === 'visible') {
+            updateUIWithState(currentState, frameInterval);
+        }
+    });
+
+    // Function to smoothly transition to random values
+    function smoothTransitionToRandomValues(state, duration) {
+        let targetState = {
+            growth: (Math.random() * (1.07 - 0.9) + 0.9).toFixed(2),
+            structureSpeed: getRandomValue(1, 14),
+            rotationSpeed: getRandomValue(-10, 10),
+            layerCount: getRandomValue(2, 10),
+            distortionFactor: getRandomValue(0, 100),
+            backgroundAlpha: getRandomValue(0, 140),
+            strokeWidth: getRandomValue(1, 5),
+            polygonPoints: getRandomValue(5, 12),
+            blurFactor: getRandomValue(1, 5),
+            baseHue: getRandomValue(0, 360),
+            colorShift: getRandomValue(0, 360),
+            saturation: getRandomValue(2, 100),
+            brightness: getRandomValue(30, 100),
+            lightValue: getRandomValue(2, 100)
+        };
+
+        smoothTransition(state, targetState, duration);
     }
 
-    function setupMorphButton() {
-    const morphButton = document.getElementById('morphButton');
-    const randomizeButton = document.getElementById('randomizeButton');
+    // Function to smoothly transition between states
+    function smoothTransition(startState, endState, duration) {
+        const steps = 100;
+        const stepTime = duration / steps;
 
-    morphButton.addEventListener('click', function() {
-      
+        let stepCount = 0;
+        const interval = setInterval(() => {
+            stepCount++;
+
+            for (let key in startState) {
+                startState[key] = parseFloat(startState[key]) + (endState[key] - startState[key]) / steps;
+            }
+
+            applyState(startState);
+
+            if (stepCount >= steps) {
+                clearInterval(interval);
+            }
+        }, stepTime);
+    }
+
+    // Function to periodically update UI with state
+    function updateUIWithState(state, interval) {
+    const updateInterval = setInterval(() => {
+        if (document.getElementById('controls').style.visibility !== 'visible') {
+            clearInterval(updateInterval); // Stop updating if controls are hidden
+            return;
+        }
+
+        // Update the slider values
+        document.getElementById('growthSlider').value = state.growth;
+        document.getElementById('structureSpeedSlider').value = state.structureSpeed;
+        document.getElementById('speedSlider').value = Math.round(state.rotationSpeed * 100);
+        document.getElementById('layerSlider').value = Math.round(state.layerCount);
+        document.getElementById('distortionSlider').value = Math.round(state.distortionFactor * 100);
+        document.getElementById('backgroundSlider').value = Math.round(state.backgroundAlpha);
+        document.getElementById('strokeWidthSlider').value = Math.round(state.strokeWidth);
+        document.getElementById('polygonPointsSlider').value = Math.round(state.polygonPoints);
+        document.getElementById('blurFactorSlider').value = Math.round(state.blurFactor);
+        document.getElementById('baseHueSlider').value = Math.round(state.baseHue);
+        document.getElementById('colorShiftSlider').value = Math.round(state.colorShift);
+        document.getElementById('saturationSlider').value = Math.round(state.saturation);
+        document.getElementById('brightnessSlider').value = Math.round(state.brightness);
+        document.getElementById('lightSlider').value = Math.round(state.lightValue);
+
+        // Update the displayed values in <span> elements
+        document.getElementById('growthValue').textContent = state.growth.toFixed(2); // 2 decimal places for growth
+        document.getElementById('structureSpeedValue').textContent = Math.round(state.structureSpeed);
+        document.getElementById('speedValue').textContent = Math.round(state.rotationSpeed * 100);
+        document.getElementById('layerValue').textContent = Math.round(state.layerCount);
+        document.getElementById('distortionValue').textContent = Math.round(state.distortionFactor * 100);
+        document.getElementById('backgroundValue').textContent = Math.round(state.backgroundAlpha);
+        document.getElementById('strokeWidthValue').textContent = Math.round(state.strokeWidth);
+        document.getElementById('polygonPointsValue').textContent = Math.round(state.polygonPoints);
+        document.getElementById('blurFactorValue').textContent = Math.round(state.blurFactor);
+        document.getElementById('baseHueValue').textContent = Math.round(state.baseHue);
+        document.getElementById('colorShiftValue').textContent = Math.round(state.colorShift);
+        document.getElementById('saturationValue').textContent = Math.round(state.saturation);
+        document.getElementById('brightnessValue').textContent = Math.round(state.brightness);
+        document.getElementById('lightValue').textContent = Math.round(state.lightValue);
+
+    }, interval);
+}
+
+
+    // Function to apply the new state to the visual parameters
+    function applyState(state) {
+        growth = state.growth;
+        structureSpeed = state.structureSpeed / 100;
+        rotationSpeed = state.rotationSpeed;
+        layerCount = state.layerCount;
+        distortionFactor = state.distortionFactor;
+        backgroundAlpha = state.backgroundAlpha;
+        strokeWidth = state.strokeWidth;
+        polygonPoints = state.polygonPoints;
+        blurFactor = state.blurFactor;
+        baseHue = state.baseHue;
+        colorShift = state.colorShift;
+        saturation = state.saturation;
+        brightness = state.brightness;
+        lightValue = state.lightValue;
+    }
+
+    // Function to get a random value within a range
+    function getRandomValue(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+}
+
+
+
+
+    function setupMorphButton() {
+        const morphButton = document.getElementById('morphButton');
+        const randomizeButton = document.getElementById('randomizeButton');
+
+        morphButton.addEventListener('click', function() {
+        
 
         // Instantly set random values without smooth transition
         let cc =  (Math.random() * (1.08 - 0.9) + 0.9).toFixed(2);
@@ -828,11 +1000,11 @@ else{
         document.getElementById('backgroundSlider').value = getRandomValue(0, 255);
         document.getElementById('strokeWidthSlider').value = getRandomValue(1, 4);
         document.getElementById('polygonPointsSlider').value = getRandomValue(3, 12);
-        document.getElementById('blurFactorSlider').value = getRandomValue(2, 8);
+        document.getElementById('blurFactorSlider').value = getRandomValue(1, 5);
         document.getElementById('baseHueSlider').value = getRandomValue(0, 360);
         document.getElementById('colorShiftSlider').value = getRandomValue(0, 360);
         document.getElementById('saturationSlider').value = getRandomValue(2, 100);
-        document.getElementById('brightnessSlider').value = getRandomValue(2, 100);
+        document.getElementById('brightnessSlider').value = getRandomValue(35, 100);
         document.getElementById('lightSlider').value = getRandomValue(2, 100);
 
         // Trigger input events to apply changes
@@ -892,6 +1064,7 @@ function calculateFPS() {
         document.getElementById('fpsDisplay').style.visibility = 'hidden';
     }
 }
+
 function draw() {
     try {
         calculateFPS(); // Calculate FPS for each frame
@@ -1009,33 +1182,7 @@ function draw() {
              document.getElementById('randomizeButton').click();
         }
     }
-   //document.addEventListener('keydown', function(event) {
-   //    const controlGroups = document.querySelectorAll('.control-group');
-   //    
-   //    controlGroups.forEach(group => {
-   //        const slider = group.querySelector('input[type="range"]');
-   //        const morphButton = group.querySelector('.morphControlButton');
-   //        const keyUp = slider.getAttribute('data-key-up');
-   //        const keyDown = slider.getAttribute('data-key-down');
-   //        const keyMorph = slider.getAttribute('data-key-morph');
-
-   //        if (event.key === keyUp) {
-   //            adjustSlider(slider.id, 1);
-   //        } else if (event.key === keyDown) {
-   //            adjustSlider(slider.id, -1);
-   //        } else if (event.key === keyMorph) {
-   //            morphButton.click();
-   //        }
-   //    });
-
-   //    if (event.key === 'Enter') {
-   //        document.getElementById('randomizeButton').click();
-   //    } else if (event.key === '') {
-   //        document.getElementById('morphButton').click();
-   //    } else if (event.key === '\\') {
-   //        document.getElementById('toggleButton').click();
-   //    }
-   //});
+    
 
    let pressedKeys = {};
    document.addEventListener('keydown', function(event) {
